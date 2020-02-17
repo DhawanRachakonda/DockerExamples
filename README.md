@@ -1,9 +1,7 @@
 To Build use:
 
-sudo docker build -t more-complex .
+sudo docker build -t more-complex-alpine .
 
 To run use:
 
-sudo docker run --init --detach --rm -P more-complex
-
-DO a docker ps check dynamic port mapped for that image
+sudo docker run --init --rm -p 3000:3000 more-complex-alpine
