@@ -4,4 +4,6 @@ sudo docker build -t more-complex .
 
 To run use:
 
-docker run --init --rm --publish 3000:3000 more-complex
+sudo docker run --init --detach --rm -P more-complex
+
+DO a docker ps check dynamic port mapped for that image
