@@ -1,10 +1,10 @@
 To Build use:
 
-sudo dockebuild -t multi-stage-builds .
+sudo docker build -t multi-stage-builds .
 
 # Specify docker file name
 
-sudo dockebuild -t multi-stage-builds -f dev.Dockerfile .
+sudo docker build -t multi-stage-builds -f dev.Dockerfile .
 
 To run use:
 
