@@ -1,20 +1,18 @@
-# build stage
+ 
+FROM node:latest
 
-FROM node:12-stretch AS build
-WORKDIR /build
-COPY package.json package-lock.json ./
-RUN npm ci
-COPY . .
+RUN npm i -g nodemon
 
-# runtime stage
-
-FROM alpine:3.10
-RUN apk add --update nodejs
-RUN addgroup -S node && adduser -S node -G node
 USER node
 
 RUN mkdir /home/node/code
-WORKDIR /home/node/code
-COPY --from=build --chown=node:node /build .
 
-CMD ["node", "index.js"]
+WORKDIR /home/node/code
+
+COPY --chown=node:node package-lock.json package.json ./
+
+RUN npm ci
+
+COPY --chown=node:node . .
+
+CMD ["nodemon", "index.js"]

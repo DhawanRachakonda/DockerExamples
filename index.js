@@ -1,29 +1,50 @@
-const Hapi = require('@hapi/hapi');
+const hapi = require("@hapi/hapi");
+const { MongoClient } = require("mongodb");
+const url = process.env.MONGO_CONNECTION_STRING || "mongodb://localhost:27017";
+const dbName = "dockerApp";
+const collectionName = "count";
 
-const init = async () => {
+async function start() {
+  const client = await MongoClient.connect(url);
+  const db = client.db(dbName);
+  const collection = db.collection(collectionName);
 
-    const server = Hapi.server({
-        port: 3000,
-        host: '0.0.0.0'
-    });
+  const server = hapi.server({
+    host: "0.0.0.0",
+    port: process.env.PORT || 3000
+  });
 
-    server.route({
-        method: 'GET',
-        path: '/',
-        handler: (request, h) => {
+  server.route({
+    method: "GET",
+    path: "/",
+    async handler() {
+      const count = await collection.count();
+      return { success: true, count };
+    }
+  });
 
-            return 'Hello World!';
-        }
-    });
+  server.route({
+    method: "GET",
+    path: "/add",
+    async handler() {
+      const res = await collection.insertOne({});
+      return { inserted: res.insertedCount, success: true };
+    }
+  });
 
-    await server.start();
-    console.log('Server running on %s', server.info.uri);
-};
+  await server.register({
+    plugin: require("hapi-pino"),
+    options: {
+      prettyPrint: true
+    }
+  });
 
-process.on('unhandledRejection', (err) => {
+  await server.start();
 
-    console.log(err);
-    process.exit(1);
+  return server;
+}
+
+start().catch(err => {
+  console.log(err);
+  process.exit(1);
 });
-
-init();
